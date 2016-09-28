@@ -121,18 +121,20 @@ function callbackIdCount(){
 }
 
 function callbackQuestionData(){
-    questionsAll.sort();
+    questionsAll[Math.floor(Math.random() * questionsAll.length)];
     if(questionsAll.length > 50){
-        for(var count = 0; count < 50; count++){
-            questions.push(questionsAll[count]);
+        for(var count2 = 0; count2 < 50; count2++){
+            console.log(count2);
+            questions[count2] = questionsAll[count2];
         }
     } else {
-        for(var count = 0; count < questionsAll.length; count++){
-            questions.push(questionsAll[count]);
+        for(var count2 = 0; count2 < idCount; count2++){
+            console.log(count2);
+            questions[count2] = questionsAll[count2];
         }
     }
 
-    questions[Math.floor(Math.random() * questions.length)];
+    shuffleArray(questions);
 
     if(!isNaN(parseInt(hash[3]))){
         console.log(isNaN(parseInt(hash[3])));
@@ -143,15 +145,24 @@ function callbackQuestionData(){
     
 }
 
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
 function getQuestion(){
     var thisQuestion = questions[parseInt(hash[3])];
     var opts = questions[parseInt(hash[3])].opts;
     rightOpt = opts[0];
     document.body.innerHTML = document.getElementById('questions').innerHTML;
-
-    opts.sort;
     questionChangeText(thisQuestion.question);
-    opts[Math.floor(Math.random() * opts.length)];
+    shuffleArray(opts);
+    console.log(opts);
     for(var count = 0; count < opts.length; count++){
         questionInsertRadio(opts[count]);
     }
@@ -222,26 +233,26 @@ function getIdCount(){
 	});
 }
 
-function getQuestionData(count){
-    count++;
+function getQuestionData(countNumber){
+    countNumber++;
     questionsFB = firebase.database().ref('questions/' + system + '/' + spec + '/questions/');
     questionsFB.on("value", function(systems) {
         systems.forEach(function(questions) {
-            if(count <= idCount){
-                if(count > 10){
-                    console.log(systemId + specId + String(count));
-                    questionsAll[count - 1] = systems.child(systemId + specId + String(count)).val();
+            if(countNumber <= idCount){
+                if(countNumber > 10){
+                    console.log(systemId + specId + String(countNumber));
+                    questionsAll[countNumber - 1] = systems.child(systemId + specId + String(countNumber)).val();
                 } else {
-                    console.log(systemId + specId + "0" + String(count));
-                    questionsAll[count - 1] = systems.child(systemId + specId + "0" + String(count)).val();
+                    console.log(systemId + specId + "0" + String(countNumber));
+                    questionsAll[countNumber - 1] = systems.child(systemId + specId + "0" + String(countNumber)).val();
                 }
-                console.log(count);
+                console.log(countNumber);
                 console.log(systems.val());
-                count++;
-                if(count >= idCount){
+                countNumber++;
+                if(countNumber >= idCount){
                     callbackQuestionData();
                 } else {
-                    getQuestionData(count);
+                    getQuestionData(countNumber);
                 }
             }
         });
