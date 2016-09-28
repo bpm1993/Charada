@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+	<title>Projeto Charada</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="myHTML" id="menu">
+        <div class="container">
+            <div class="center-block">
+                <div class="valueWrap">
+                    <label id="menu-title"></label>
+                </div>
+                <ul class="nav nav-pills nav-stacked">
+                </ul>
+            </div>
+        </div></script>
+    <script type="myHTML" id="questionsStart">
+        <div class="container">
+            <div class="center-block">
+                <label class="questionLabel"></label>
+                <div class="questionOptions">
+                </div>
+            </div>
+        </div> </script>
+    <script type="myHTML" id="questions">
+        <div class="container">
+            <div class="center-block">
+                <label class="questionLabel"></label>
+                <div class="questionOptions">
+                </div>
+                <button type="button" class="btn confirm_option" onclick="confirmAnswer()">Confirmar Opção</button>
+            </div>
+        </div> </script>
+    <style>
+        .center-block{
+            width:500px;
+            display:block;
+        }
+        .valueWrap {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
+    <script src="assets/view-controller.js"></script>
+</body>
