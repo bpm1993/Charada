@@ -22,19 +22,6 @@ firebase.initializeApp(config);
 
 var questionsFB = firebase.database().ref('questions/');
 
-var urlParams;
-(window.onpopstate = function () {
-    var match,
-        pl     = /\+/g,  // Regex for replacing addition symbol with a space
-        search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-        query  = window.location.search.substring(1);
-
-    urlParams = {};
-    while (match = search.exec(query))
-       urlParams[decode(match[1])] = decode(match[2]);
-})();
-
 var hash = document.location.hash.substring(1).split('&');
 createBody();
 
@@ -47,7 +34,6 @@ window.addEventListener('hashchange', function() {
 $('body').on('change',' input', function(){
     selectedOption = $(this).parent().text();
     console.log(selectedOption);
-
 })
 
 function createBody(){
@@ -98,6 +84,10 @@ function menuAdobe(){
     menuInsertOption("#questions&adobe&arq&start", "Arquiteto");
 }
 
+function menuGA(){
+
+}
+
 function question(){
     if(hash[3] == 'start'){
         questionStart();
@@ -108,7 +98,26 @@ function question(){
     }
 }
 
+function resetCharada(){
+    document.location.hash = "#menu";
+}
+
+function questionFinish(){
+    document.body.innerHTML = document.getElementById('questionsFinish').innerHTML;
+    questionChangeText("Você acertou " + rightQuestions.length + " de " + questions.length + " questões");
+}
+
+function resetArrays(){
+    questionsAll = [];
+    questions = [];
+    rightQuestions = [];
+    wrongQuestions = [];
+    rightOpt = "";
+    selectedOption = "";
+}
+    
 function questionStart(){
+    resetArrays();
     system = hash[1];
     spec = hash[2];
     getSystemId();
