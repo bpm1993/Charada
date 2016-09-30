@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+	<title>Projeto Charada</title>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="/assets/index.css">
+</head>
+
+<body>
+	<div class="container">
+		<h1 class ="text-center">Projeto Charada</h2>
+		<form id="InputForm">
+			<div class="form-group">
+				<label>Sistema:</label>
+				<input type="text" class="form-control" id="system" placeholder="Insira o nome do site">
+			</div>
+			<div class="form-group">
+				<label>Especialização:</label>
+				<input type="text" class="form-control" id="spec" placeholder="Insira o nome da pagina">
+			</div>
+            <div class="form-group" id="questionType">
+				<label>Tipo de Pergunta:</label>
+                <br>
+				<label><input type="radio" name="optradio">Resposta Única</label>
+                <br>
+                <label><input type="radio" name="optradio">Multiplas Respostas</label>
+			</div>
+            <div id="numberOfCorrectsSpace">
+                
+            </div>
+			<div class="form-group">
+				<label>Pergunta:</label>
+				<input type="text" class="form-control" id="question" placeholder="Insira a URL da pagina">
+			</div>
+			<div class="form-group">
+				<label>Resposta correta:</label>
+				<input type="text" class="form-control" id="pageSel0" placeholder="Insira o seletor">
+			</div>
+		</form>
+		<button type="button" class="btn btn-default" id ="insertSel" onclick="insertQuestion()">Inserir Opção</button>
+		<button type="button" class="btn btn-default" id ="Submit" onclick="sendData()">Finalizar</button>
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
+    <script src="assets/insert_questions.js"></script>
+</body>

@@ -1,6 +1,8 @@
 var questions = [];
 var rightQuestions = [];
 var wrongQuestions = [];
+var menuSysAll = [];
+var menuSpecAll = [];
 var lockAnwser = false;
 var rightOpt;
 var system;
@@ -28,21 +30,22 @@ createBody();
 window.addEventListener('hashchange', function() {
     hash = document.location.hash.substring(1).split('&');
     document.body.innerHTML = "";
+    menuSysAll = [];
+    menuSpecAll = [];
     createBody();
 });
 
 $('body').on('change',' input', function(){
     selectedOption = $(this).parent().text();
-    console.log(selectedOption);
 })
 
 function createBody(){
     switch (hash[0]) {
         case "menu":
-            menuBody();
+            loadMenuOptions();
             break;
         case "questions":
-            questionBody();
+            question();
             break;
         default:
             document.location.hash = "#menu";
@@ -50,42 +53,45 @@ function createBody(){
     }
 }
 
-function menuBody(){
-    switch (hash[1]) {
-        case "adobe":
-            if(hash[2] == "da"){
-                
-            } else if(hash[2] == "dev") {
-
-            } else if(hash[2] == "arq"){
-
-            } else {
-                menuAdobe();
-            }
-            break;
-        default:
+function loadMenuOptions(){
+    if(hash[1] != undefined){
+        questionsFB = firebase.database().ref('questions/' + hash[1]);
+        questionsFB.on("value", function(all) {
+            all.forEach(function(systems){
+                if(typeof systems.val() == "object"){
+                    menuSpecAll.push(systems.key);
+                }
+            })
+            menuSpec();
+        });
+    } else {
+        questionsFB = firebase.database().ref('questions/');
+        questionsFB.on("value", function(all) {
+            all.forEach(function(systems){
+                if(typeof systems.val() == "object"){
+                    menuSysAll.push(systems.key);
+                }
+            })
             menuAll();
-            break;
+        });
     }
+    
 }
 
 function menuAll(){
     document.body.innerHTML = document.getElementById('menu').innerHTML;
     menuChangeLabel("Selecione o sistema:")
-    menuInsertOption("#menu&adobe", "Adobe");
-    menuInsertOption("#menu&ga", "GA");
+    for(var count = 0; count < menuSysAll.length; count++){
+        menuInsertOption('#menu&' + menuSysAll[count], menuSysAll[count]);
+    }
 }
 
-function menuAdobe(){
+function menuSpec(){
     document.body.innerHTML = document.getElementById('menu').innerHTML;
-    menuChangeLabel("Selecione a sua especialização:")
-    menuInsertOption("#questions&adobe&da&start", "DA");
-    menuInsertOption("#questions&adobe&dev&start", "Dev");
-    menuInsertOption("#questions&adobe&arq&start", "Arquiteto");
-}
-
-function menuGA(){
-
+    menuChangeLabel("Selecione a especialidade:");
+    for(var count = 0; count < menuSpecAll.length; count++){
+        menuInsertOption('#questions&' + hash[1] + '&' + menuSpecAll[count] + '&start', menuSpecAll[count]);
+    }
 }
 
 function question(){
@@ -133,20 +139,19 @@ function callbackQuestionData(){
     questionsAll[Math.floor(Math.random() * questionsAll.length)];
     if(questionsAll.length > 50){
         for(var count2 = 0; count2 < 50; count2++){
-            console.log(count2);
             questions[count2] = questionsAll[count2];
         }
     } else {
         for(var count2 = 0; count2 < idCount; count2++){
-            console.log(count2);
             questions[count2] = questionsAll[count2];
         }
     }
 
+    console.log(questions);
+
     shuffleArray(questions);
 
     if(!isNaN(parseInt(hash[3]))){
-        console.log(isNaN(parseInt(hash[3])));
         document.location.hash = "#questions&" + system + "&" + spec + "&" + parseInt(hash[3]) + 1;
     } else {
         document.location.hash = "#questions&" + system + "&" + spec + "&" + "0";
@@ -171,26 +176,54 @@ function getQuestion(){
     document.body.innerHTML = document.getElementById('questions').innerHTML;
     questionChangeText(thisQuestion.question);
     shuffleArray(opts);
-    console.log(opts);
-    for(var count = 0; count < opts.length; count++){
-        questionInsertRadio(opts[count]);
+
+    if(thisQuestion.type == "single"){
+        for(var count = 0; count < opts.length; count++){
+            questionInsertRadio(opts[count]);
+        }
+    } else {
+        for(var count = 0; count < opts.length; count++){
+            questionInsertCheck(opts[count]);
+        }
     }
+
+    
     lockAnwser = false;
 }
 
 function confirmAnswer(){
-    console.log(selectedOption);
-    console.log(rightOpt);
-    if(selectedOption == rightOpt){
-        rightQuestions.push(questions[parseInt(hash[3])]);
+    if(questions[parseInt(hash[3])].type == 'single'){
+        if(selectedOption == rightOpt){
+            rightQuestions.push(questions[parseInt(hash[3])]);
+        } else {
+            wrongQuestions.push(questions[parseInt(hash[3])]);
+        }
     } else {
-        wrongQuestions.push(questions[parseInt(hash[3])]);
+        var totalRight = 0;
+        for(var count = 0; count < $(':checked').length; count++){
+            for(var count2 = 0; count2 < questions[parseInt(hash[3])].rightAnswers; count2++){
+                if($($(':checked')[1]).parent().text() == questions[parseInt(hash[3])].opts[count2]){
+                    totalRight++;
+                }
+            }
+        }
+
+        if(totalRight == questions[parseInt(hash[3])].rightAnswers){
+            rightQuestions.push(questions[parseInt(hash[3])]);
+        }
     }
+    
     lockAnwser = true;
     if(parseInt(hash[3])+ 1 == idCount ){
         document.location.hash = "#questions&" + system + "&" + spec + "&finish";
     } else {
-        document.location.hash = "#questions&" + system + "&" + spec + "&" + parseInt(hash[3]) + 1;
+        var newFrag = String(parseInt(hash[3]) + 1)
+        if(parseInt(hash[3]) + 1 < 10){
+            newFrag = String("0" + (parseInt(hash[3]) + 1));
+        } else {
+            newFrag = String((parseInt(hash[3]) + 1));
+        }
+        document.location.hash = "#questions&" + system + "&" + spec + "&" + newFrag;
     }
 }
 
@@ -223,9 +256,24 @@ function questionInsertRadio(labelText){
     newInput.setAttribute("type", "radio");
     newInput.setAttribute("name", "optradio");
 
-    newLabel.innerHTML = labelText;
+    newLabel.appendChild(newInput);
+    newLabel.innerHTML += labelText;
+
+    newOption.appendChild(newLabel);
+    $(".questionOptions").append(newOption);
+}
+
+function questionInsertCheck(labelText){
+    var newOption = document.createElement("div");
+    var newLabel = document.createElement("label");
+    var newInput = document.createElement("input");
+
+    newInput.setAttribute("type", "checkbox");
+    newInput.setAttribute("value", "");
 
     newLabel.appendChild(newInput);
+    newLabel.innerHTML += labelText;
+
     newOption.appendChild(newLabel);
     $(".questionOptions").append(newOption);
 }
@@ -238,6 +286,7 @@ function getIdCount(){
     var id;
     questionsFB.on("value", function(spec) {
         idCount = spec.child('idCount').val();
+        idCount--;
         callbackIdCount();
 	});
 }
@@ -246,25 +295,12 @@ function getQuestionData(countNumber){
     countNumber++;
     questionsFB = firebase.database().ref('questions/' + system + '/' + spec + '/questions/');
     questionsFB.on("value", function(systems) {
+        var count = 0;
         systems.forEach(function(questions) {
-            if(countNumber <= idCount){
-                if(countNumber > 10){
-                    console.log(systemId + specId + String(countNumber));
-                    questionsAll[countNumber - 1] = systems.child(systemId + specId + String(countNumber)).val();
-                } else {
-                    console.log(systemId + specId + "0" + String(countNumber));
-                    questionsAll[countNumber - 1] = systems.child(systemId + specId + "0" + String(countNumber)).val();
-                }
-                console.log(countNumber);
-                console.log(systems.val());
-                countNumber++;
-                if(countNumber >= idCount){
-                    callbackQuestionData();
-                } else {
-                    getQuestionData(countNumber);
-                }
-            }
+            questionsAll[count] = questions.val();
+            count++;
         });
+        callbackQuestionData();
 	});
 }
 
