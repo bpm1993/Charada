@@ -172,7 +172,7 @@ function sendData() {
 
                 post[systemName] = {
                     idPref: newSysID,
-                    idCount: 2
+                    idCount: 1
                 };
 
                 post[systemName][specName] = {
