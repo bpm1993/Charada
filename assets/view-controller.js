@@ -57,9 +57,9 @@ function loadMenuOptions(){
     if(hash[1] != undefined){
         questionsFB = firebase.database().ref('questions/' + hash[1]);
         questionsFB.on("value", function(all) {
-            all.forEach(function(systems){
-                if(typeof systems.val() == "object"){
-                    menuSpecAll.push(systems.key);
+            all.forEach(function(spec){
+                if(typeof spec.val() == "object"){
+                    menuSpecAll.push(spec.key);
                 }
             })
             menuSpec();
@@ -115,7 +115,6 @@ function questionFinish(){
 
 function resetArrays(){
     questionsAll = [];
-    questions = [];
     rightQuestions = [];
     wrongQuestions = [];
     rightOpt = "";
@@ -202,7 +201,7 @@ function confirmAnswer(){
         var totalRight = 0;
         for(var count = 0; count < $(':checked').length; count++){
             for(var count2 = 0; count2 < questions[parseInt(hash[3])].rightAnswers; count2++){
-                if($($(':checked')[1]).parent().text() == questions[parseInt(hash[3])].opts[count2]){
+                if($($(':checked')[count]).parent().text() == questions[parseInt(hash[3])].opts[count2]){
                     totalRight++;
                 }
             }
@@ -210,6 +209,8 @@ function confirmAnswer(){
 
         if(totalRight == questions[parseInt(hash[3])].rightAnswers){
             rightQuestions.push(questions[parseInt(hash[3])]);
+        } else {
+            wrongQuestions.push(questions[parseInt(hash[3])]);
         }
     }
     
@@ -288,7 +289,7 @@ function getIdCount(){
         idCount = spec.child('idCount').val();
         idCount--;
         callbackIdCount();
-	});
+    });
 }
 
 function getQuestionData(countNumber){
@@ -301,7 +302,7 @@ function getQuestionData(countNumber){
             count++;
         });
         callbackQuestionData();
-	});
+    });
 }
 
 function getSystemId(){
@@ -309,7 +310,7 @@ function getSystemId(){
     questionsFB.on("value", function(spec) {
         systemId = spec.child('idPref').val();
         getSpecId();
-	});
+    });
 }
 
 function getSpecId(){
@@ -317,5 +318,5 @@ function getSpecId(){
     questionsFB.on("value", function(spec) {
         specId = spec.child('idPref').val();
         getIdCount();
-	});
+    });
 }
